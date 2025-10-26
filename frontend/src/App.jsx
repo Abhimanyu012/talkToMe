@@ -6,25 +6,25 @@ const App = () => {
 
   const rootBg = isDark
     ? 'bg-gradient-to-br from-blue-950 via-black to-emerald-950 text-gray-100'
-    :'bg-blue-200'
-    // : 'bg-gradient-to-br from-blue-300 via-white to-emerald-200 text-gray-900'
+
+    : 'bg-gradient-to-br from-blue-300 via-white to-emerald-200 text-gray-900'
 
   const glassCard = isDark
     ? 'bg-white/6 border border-white/10 shadow-lg text-gray-100'
     : // lighter, more translucent frosted look for light mode
-      'bg-white/30 backdrop-blur-sm backdrop-saturate-105 border border-white/20 shadow-sm text-gray-900'
+    'bg-white/30 backdrop-blur-sm backdrop-saturate-105 border border-white/20 shadow-sm text-gray-900'
 
   const headerGlass = isDark
     ? 'bg-white/6 border border-white/8'
     : // softer glass header in light mode
-      'bg-white/20 backdrop-blur-md backdrop-saturate-105 border border-white/15'
+    'bg-white/20 backdrop-blur-md backdrop-saturate-105 border border-white/15'
 
   const accent = isDark ? 'from-indigo-500 to-purple-600' : 'from-indigo-600 to-indigo-400'
 
   return (
     <div className={`min-h-screen ${rootBg} transition-colors duration-300`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <header className={`backdrop-blur-md ${headerGlass} rounded-xl p-4 mb-8 transition-colors`}>
+        <header className={` backdrop-blur-md shadow-sm ${headerGlass} rounded-xl p-4 mb-8 transition-colors`}>
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div
@@ -53,9 +53,8 @@ const App = () => {
 
             <div className="flex items-center space-x-3">
               <button
-                className={`hidden md:inline-flex px-4 py-2 rounded-md font-medium transition ${
-                  isDark ? 'bg-indigo-600/90 hover:bg-indigo-500' : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                }`}
+                className={`hidden md:inline-flex px-4 py-2 rounded-md font-medium transition ${isDark ? 'bg-indigo-600/90 hover:bg-indigo-500' : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  }`}
               >
                 Get Started
               </button>
@@ -109,16 +108,14 @@ const App = () => {
               </p>
               <div className="mt-6 flex flex-col sm:flex-row sm:space-x-3 space-y-3 sm:space-y-0">
                 <button
-                  className={`px-5 py-3 rounded-md font-medium transition ${
-                    isDark ? 'bg-white/10 text-white hover:bg-white/12' : 'bg-indigo-600 text-white hover:bg-indigo-700'
-                  }`}
+                  className={`px-5 py-3 rounded-md font-medium transition ${isDark ? 'bg-white/10 text-white hover:bg-white/12' : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                    }`}
                 >
                   Primary Action
                 </button>
                 <button
-                  className={`px-5 py-3 rounded-md border transition ${
-                    isDark ? 'border-white/10 text-white/90 bg-white/3 hover:bg-white/5' : 'border-white/30 bg-white/50 hover:bg-white/60'
-                  }`}
+                  className={`px-5 py-3 rounded-md border transition ${isDark ? 'border-white/10 text-white/90 bg-white/3 hover:bg-white/5' : 'border-white/30 bg-white/50 hover:bg-white/60'
+                    }`}
                 >
                   Secondary
                 </button>
