@@ -6,7 +6,8 @@ const App = () => {
 
   const rootBg = isDark
     ? 'bg-gradient-to-br from-blue-950 via-black to-emerald-950 text-gray-100'
-    : 'bg-gradient-to-br from-blue-300 via-white to-emerald-200 text-gray-900'
+    :'bg-blue-200'
+    // : 'bg-gradient-to-br from-blue-300 via-white to-emerald-200 text-gray-900'
 
   const glassCard = isDark
     ? 'bg-white/6 border border-white/10 shadow-lg text-gray-100'
