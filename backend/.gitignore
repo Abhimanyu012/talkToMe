@@ -39,3 +39,4 @@ temp/
 # Packaging
 *.tgz
 *.zip
+node_modules/
