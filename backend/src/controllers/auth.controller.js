@@ -54,12 +54,41 @@ export const signup = async (req, res) => {
 
 
 
-export const login = (req, res) => {
-    res.send("this is login page")
+export const login = async (req, res) => {
+const { email, password } = req.body
+
+    try {
+        if (!email || !password) {
+            return res.status(400).json({ message: "All fields are required" });
+        }
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(email)) {
+            return res.status(400).json({ message: "Invalid email address" });
+        }
+
+        const user = await User.findOne({ email })
+        if (!user) return res.status(400).json({ message: "Invalid credentials" })
+
+        const isMatch = await bcrypt.compare(password, user.password)
+        if (!isMatch) return res.status(400).json({ message: "Invalid credentials" })
+
+        // generate auth token (sets cookie / response as implemented in utils)
+        generateToken(user._id, res)
+
+        res.status(200).json(user.fullName)
+
+        console.log(`user ${user.fullName} logged in successfully`)
+    } catch (error) {
+        console.log("error in login controller :", error);
+        return res.status(500).json({ message: "Server error" });
+    }
+
 }
 
 
 
-export const logout = (req, res) => {
-    res.send("this is signup page")
+export const logout = (_req, res) => {
+    res.clearCookie('token');
+    return res.status(200).json({ message: "Logged out" });
 }
