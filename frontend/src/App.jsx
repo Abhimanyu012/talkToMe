@@ -28,7 +28,7 @@ const App = () => {
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <div
-                className={`h-10 w-10 rounded flex items-center justify-center font-bold bg-clip-padding bg-gradient-to-br ${accent} text-white`}
+                className={`h-10 w-10 rounded flex items-center justify-center font-bold bg-clip-padding bg-linear-to-br ${accent} text-white`}
                 aria-hidden
               >
                 TT
@@ -124,7 +124,7 @@ const App = () => {
 
             <div className={`rounded-xl p-6 ${glassCard} backdrop-blur-md transition`}>
               <div
-                className={`h-56 rounded-md flex items-center justify-center font-semibold bg-gradient-to-br ${accent} bg-clip-padding text-white`}
+                className={`h-56 rounded-md flex items-center justify-center font-semibold bg-linear-to-br ${accent} bg-clip-padding text-white`}
               >
                 Illustration / Preview
               </div>
