@@ -12,10 +12,30 @@ const app = express();
 
 const PORT = process.env.PORT || 3000
 const __dirname = path.resolve()
-
 app.use(express.json())
+
+// Simple request logger: logs method, path and response status
+app.use((req, res, next) => {
+  const start = Date.now()
+  res.on('finish', () => {
+    const ms = Date.now() - start
+    console.log(`${req.method} ${req.originalUrl} ${res.statusCode} - ${ms}ms`)
+  })
+  next()
+})
 app.use("/api/auth", authRoutes)
 app.use("/api/messages", messageRoutes)
+
+// Serve a small empty favicon response to avoid unnecessary 404/503 noise
+app.get('/favicon.ico', (req, res) => {
+  const favPath = path.join(__dirname, '../frontend/dist', 'favicon.ico')
+  // if a favicon exists in the built frontend, serve it; otherwise return 204 No Content
+  res.sendFile(favPath, err => {
+    if (err) {
+      res.status(204).end()
+    }
+  })
+})
 
 // serving frontend here
 if (process.env.NODE_ENV === "production") {
@@ -27,45 +47,50 @@ if (process.env.NODE_ENV === "production") {
   })
 }
 
-// health endpoint for readiness probes
+// health endpoint (simple)
 app.get('/health', (req, res) => {
   const state = mongoose.connection.readyState // 0 = disconnected, 1 = connected
-  res.json({ ok: state === 1, mongooseState: state })
+  if (state === 1) return res.json({ ok: true })
+  return res.status(503).json({ ok: false })
 })
 
-// establishing the connection then server is listening
+// Start server after DB connects
 let server
-const startServer = async () => {
-  try {
-    await connectDb()
+connectDb()
+  .then(() => {
     server = app.listen(PORT, () => {
       console.log(`server is running at port http://localhost:${PORT}`)
     })
-  } catch (err) {
-    console.error('Failed to start server because DB connection failed:', err)
+  })
+  .catch((err) => {
+    console.error('Failed to start server because DB connection failed:', err.message || err)
     process.exit(1)
-  }
-}
-startServer()
+  })
 
-// Graceful shutdown handler
-const gracefulShutdown = async (signal) => {
-  console.log(`Received ${signal}. Shutting down gracefully...`)
+// Improved graceful shutdown: close HTTP server and DB connection
+const shutdown = async (signal) => {
+  console.log(`Received ${signal}. Shutting down...`)
   try {
-    if (server) {
-      await new Promise((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())) )
+    if (server && server.listening) {
+      await new Promise((resolve, reject) => {
+        server.close(err => (err ? reject(err) : resolve()))
+      })
+      console.log('HTTP server closed')
+    } else {
+      console.log('HTTP server not running')
     }
+
     await disconnectDb()
-    console.log('Shutdown complete')
+    console.log('DB disconnected')
     process.exit(0)
-  } catch (err) {
-    console.error('Error during graceful shutdown', err)
+  } catch (e) {
+    console.error('Error during shutdown', e)
     process.exit(1)
   }
 }
 
-process.on('SIGINT', () => gracefulShutdown('SIGINT'))
-process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
+process.on('SIGINT', () => shutdown('SIGINT'))
+process.on('SIGTERM', () => shutdown('SIGTERM'))
 
 
 
