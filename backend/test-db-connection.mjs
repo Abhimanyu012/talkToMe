@@ -1,5 +1,8 @@
-import 'dotenv/config'
+import dotenv from 'dotenv'
 import mongoose from 'mongoose'
+
+// Ensure we load the backend/.env regardless of CWD when running from repo root
+dotenv.config({ path: new URL('./.env', import.meta.url).pathname })
 
 const dbUrl = process.env.DATABASE_URL
 
