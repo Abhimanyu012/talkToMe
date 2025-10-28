@@ -1,5 +1,8 @@
 import jwt from 'jsonwebtoken'
 export const generateToken = (userId, res) => {
+    if (!process.env.JWT_SECRET) {
+        throw new Error("JWT_SECRET environment variable is not defined");
+    }
     const token = jwt.sign({ userId }, process.env.JWT_SECRET, {
         expiresIn: "7d"
     })
@@ -10,4 +13,4 @@ export const generateToken = (userId, res) => {
         // secure: process.env.NODE_ENV === "production" ? true : false
     })
     return token
-}
+} 
