@@ -3,7 +3,8 @@ import authRoutes from './routes/auth.route.js';
 import messageRoutes from './routes/messages.route.js';
 import * as dotenv from 'dotenv';
 import path from 'path'
-import { connectDb } from './config/db.js';
+import { connectDb, disconnectDb } from './config/db.js';
+import mongoose from 'mongoose'
 dotenv.config();
 
 
@@ -26,11 +27,18 @@ if (process.env.NODE_ENV === "production") {
   })
 }
 
+// health endpoint for readiness probes
+app.get('/health', (req, res) => {
+  const state = mongoose.connection.readyState // 0 = disconnected, 1 = connected
+  res.json({ ok: state === 1, mongooseState: state })
+})
+
 // establishing the connection then server is listening
+let server
 const startServer = async () => {
   try {
     await connectDb()
-    let server = app.listen(PORT, () => {
+    server = app.listen(PORT, () => {
       console.log(`server is running at port http://localhost:${PORT}`)
     })
   } catch (err) {
@@ -39,6 +47,25 @@ const startServer = async () => {
   }
 }
 startServer()
+
+// Graceful shutdown handler
+const gracefulShutdown = async (signal) => {
+  console.log(`Received ${signal}. Shutting down gracefully...`)
+  try {
+    if (server) {
+      await new Promise((resolve, reject) => server.close((err) => (err ? reject(err) : resolve())) )
+    }
+    await disconnectDb()
+    console.log('Shutdown complete')
+    process.exit(0)
+  } catch (err) {
+    console.error('Error during graceful shutdown', err)
+    process.exit(1)
+  }
+}
+
+process.on('SIGINT', () => gracefulShutdown('SIGINT'))
+process.on('SIGTERM', () => gracefulShutdown('SIGTERM'))
 
 
 
