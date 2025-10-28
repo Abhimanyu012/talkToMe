@@ -1,7 +1,7 @@
 import User from "../models/users.model.js";
 import bcrypt from 'bcryptjs';
 import { generateToken } from "../config/utils.js";
-import { sendResendEmail } from "../config/resend.js";
+import { sendResendEmail, resendEnabled } from "../config/resend.js";
 
 
 
@@ -119,8 +119,12 @@ export const signup = async (req, res) => {
             } catch (e) {
                 console.error('Failed to send welcome email:', e);
             }
-        };
-        sendWelcomeEmail();
+    };
+    if (resendEnabled) {
+      sendWelcomeEmail();
+    } else {
+      console.log('Resend disabled - skipping welcome email');
+    }
 
         // generate auth token (sets cookie / response as implemented in utils)
         try {
